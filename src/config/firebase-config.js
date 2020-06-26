@@ -8,3 +8,4 @@ export default {
     storageBucket: process.env.storageBucket,
     messagingSenderId: process.env.messagingSenderId
   };
+

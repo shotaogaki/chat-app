@@ -8,12 +8,10 @@ import 'firebase/auth';
 export default function TextField() {
 
     useEffect(() => {
-        console.log('effe内');
         firebase.auth().onAuthStateChanged(user => { if(user) {
                 loadMessages();
             }else {
                 hideMessage();
-                console.log("useeffect内")
             }
         });
     })
@@ -63,17 +61,16 @@ export default function TextField() {
     }
 
     const loadMessages = () => {
-        console.log('load内')
         firebase.firestore().collection('messages').orderBy('timestamp')
           .get()
           .then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-              displayMessage( doc.id ,doc.data().name, doc.data().message, doc.data().photoURL)
+                displayMessage( doc.id ,doc.data().name, doc.data().translated, doc.data().photoURL)
             });
           })
     }
 
-    const displayMessage = ( id, name, message, url) => {
+    const displayMessage = ( id, name, transMsg, url) => {
         const template =
             '<div style="display: flex; flex-direction: row; border-bottom: solid 1px #acacac">' +
                 '<div>'+
@@ -101,32 +98,31 @@ export default function TextField() {
         div.querySelector('.name').textContent = name;
         let messageElement = div.querySelector('.message');
 
-        if (message) {
-            messageElement.textContent = message;
+        if (transMsg) {
+            messageElement.textContent = `${transMsg.ja}
+                                          ${transMsg.en}
+                                          ${transMsg.zh}`;
             messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
         }
 
         let element = document.getElementById('messages');
-        var bottom = element.scrollHeight - element.clientHeight;
+        let bottom = element.scrollHeight - element.clientHeight;
         element.scroll(0, bottom);
     }
 
     //うまく作用しない
     const hideMessage = () => {
         document.getElementById('messages').innerHTML = "";
-        console.log("hide内")
     }
 
     const observeMessages = () => {
-        console.log('observe内')
         firebase.firestore().collection("messages").orderBy('timestamp')
         .onSnapshot(function(querySnapshot) {
             querySnapshot.forEach(function(doc) {
-                displayMessage(doc.id ,doc.data().name, doc.data().message, doc.data().photoURL);
+                displayMessage(doc.id ,doc.data().name, doc.data().translated, doc.data().photoURL);
             });
         },function(error) {
             console.log(error);
-            
         });
     }
 
