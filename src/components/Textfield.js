@@ -8,15 +8,10 @@ import 'firebase/auth';
 export default function TextField() {
 
     useEffect(() => {
-        firebase.auth().onAuthStateChanged(user => { if(user) {
-                loadMessages();
-            }else {
-                hideMessage();
-            }
-        });
+        loadMessages();
     })
 
-    const LoginedComponent = () => {
+    const textComponent = () => {
         return (
             <React.Fragment style={{ backgroundColor: '#b8b8b8'}}>
                 <CssBaseline />
@@ -24,6 +19,7 @@ export default function TextField() {
                 <Typography component="div" style={{ position: 'relative', backgroundColor: '#ffffff', height: '80vh', marginTop: '50px', boxShadow: '2px 2px 4px gray'}} >
                     <div id='messages' style={{overflow: 'scroll', height: '90%'}}></div>
                     <form  onSubmit={e => handleMessage(e)}style={{ position: 'absolute', bottom: '10px', width: '100%'}}>
+                        <input id='nameInput' placeholder='name...' style={{width: '10%'}}></input>
                         <input id='messageInput' placeholder='messages...' style={{width: '60%'}}></input>
                         <button type='submit' id='msgSubmitBtn'>Send</button>
                     </form>
@@ -36,14 +32,18 @@ export default function TextField() {
     const handleMessage = (e) => {
         e.preventDefault();
         const messageInput = document.getElementById('messageInput');
-        const user = firebase.auth().currentUser;
+        const nameInput = document.getElementById('nameInput');
+        const user = firebase.auth().currentUser? firebase.auth().currentUser: {
+            displayName: nameInput.value? nameInput.value: "匿名ユーザー",
+            photoURL: 'https://img.icons8.com/ios/50/000000/saitama.png',
+        };
         saveMessages(messageInput, user);
         loadMessages();  
         messageInput.value = "";
     }
 
     const saveMessages = (msgInp, user) => {
-        if(user && msgInp.value !== '') {
+        if(msgInp.value !== '') {
             firebase.firestore().collection('messages').doc().set({
                 name: user.displayName,
                 message: msgInp.value,
@@ -53,11 +53,9 @@ export default function TextField() {
             .catch(function(error) {
                 console.error("Error adding document: ", error);
             });   
-        }else if(user){
+        }else{
             alert("メッセージを入力してください！！");
-        }else {
-            alert("ログインしてください！！");
-        }  
+        } 
     }
 
     const loadMessages = () => {
@@ -110,11 +108,6 @@ export default function TextField() {
         element.scroll(0, bottom);
     }
 
-    //うまく作用しない
-    const hideMessage = () => {
-        document.getElementById('messages').innerHTML = "";
-    }
-
     const observeMessages = () => {
         firebase.firestore().collection("messages").orderBy('timestamp')
         .onSnapshot(function(querySnapshot) {
@@ -130,7 +123,7 @@ export default function TextField() {
 
     return (
         <div>
-        { LoginedComponent() }  
+        { textComponent() }  
       </div>
     );
 };
