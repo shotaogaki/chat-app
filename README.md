@@ -18,11 +18,6 @@
     react: 16.13.1,<br />
     react-dom: 16.13.1,<br />
     react-scripts: 3.4.1<br />
-    typescript: 3.7.5<br />
-    @types/jest: 24.9.1<br />
-    @types/node: 12.12.47<br />
-    @types/react: 16.9.41<br />
-    @types/react-dom: 16.9.8<br />
     @material-ui/core: 4.10.1,<br />
     @material-ui/icons: 4.9.1,<br />
     @testing-library/jest-dom: 4.2.4,<br />
